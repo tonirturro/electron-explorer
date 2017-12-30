@@ -1,0 +1,27 @@
+{
+  "name": "electron-browser",
+  "version": "1.0.0",
+  "description": "File browser using electron",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron app/backend",
+    "build": "webpack --config webpack.config.js"
+  },
+  "keywords": [
+    "electron",
+    "browser",
+    "angular"
+  ],
+  "author": "tonirturro@outlook.es",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^1.7.10",
+    "eslint": "^4.13.1",
+    "webpack": "^3.10.0"
+  },
+  "dependencies": {
+    "angular": "^1.6.8",
+    "async": "^2.6.0",
+    "osenv": "^0.1.4"
+  }
+}

@@ -1,3 +1,4 @@
+import "./css/app.css";
 import angular from "angular";
 import mainController from "./main.controller";
 import backendService from "./backendService";

@@ -10,6 +10,10 @@
     <div ng-controller="MainController">
         <div id="toolbar" >
             <div id="current-folder">{{ filePath }}</div>
+            <div id="search">
+                <input type="search" id="earch-input" ng-model="query"/>
+                <button ng-click="searchFiles()">Search</button>    
+            </div>
         </div>
         <div id="main-area">
             <div class="item" ng-repeat="fileInfo in filesInfo">

@@ -26,6 +26,7 @@
   "dependencies": {
     "angular": "^1.6.8",
     "async": "^2.6.0",
+    "lunr": "^2.1.5",
     "osenv": "^0.1.4"
   }
 }

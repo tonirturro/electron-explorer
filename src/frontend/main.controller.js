@@ -1,10 +1,14 @@
 'use strict';
+var search = require('./search');
 
 function mainController($scope, backendService)
 {
+    var loadedFilesInfo = []
     $scope.filePath = 'searching..';
     $scope.filesInfo = [];
+    $scope.query = '';
     $scope.changeFolder = changeFolder;
+    $scope.searchFiles = searchFiles;
     init();
 
     /*****************************************
@@ -13,6 +17,15 @@ function mainController($scope, backendService)
     function changeFolder(fileInfo) {
         if (fileInfo.type === 'folder') {
             loadFolder(fileInfo.path);
+        }
+    }
+
+    function searchFiles()
+    {
+        if ($scope.query === '') {
+            resetFilter();
+        } else {
+            search.find($scope.query, filterResults);
         }
     }
 
@@ -32,7 +45,8 @@ function mainController($scope, backendService)
             if (files !== null) {
                 backendService.requestFilesInspection(folder, files).then(function(filesInfo) {
                     if (filesInfo !== null) {
-                        $scope.filesInfo = filesInfo;
+                        loadedFilesInfo = $scope.filesInfo = filesInfo;
+                        search.resetIndex(loadedFilesInfo);
                     } else {
                         console.log('Sorry, we could not display your files');
                     }
@@ -42,6 +56,25 @@ function mainController($scope, backendService)
             }
         }); 
     }
+
+   function filterResults(results) {
+        var newfilesInfo = [];
+        var validFilePaths = results.map(function(result) {
+            return result.ref;
+        });
+
+        angular.forEach(loadedFilesInfo, function(fileInfo) {
+            if (validFilePaths.indexOf(fileInfo.path) !== -1) {
+                newfilesInfo.push(fileInfo);
+            }
+        });
+
+        $scope.filesInfo = newfilesInfo;
+    }
+
+    function resetFilter() {
+        $scope.filesInfo = loadedFilesInfo;
+    } 
 }
 
 module.exports = mainController;

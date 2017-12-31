@@ -29,6 +29,20 @@ body {
     z-index: 1;
 }
 
+#search {
+    float: right;
+    display: flex;
+    margin: 2em 1em;
+}
+
+#search-input {
+    padding: 0.5em;
+    min-width: 10em;
+    border: none;
+    outline: none;
+    margin-right: 1em;
+}
+
 .item {
     position: relative;
     float: left;

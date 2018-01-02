@@ -1,14 +1,13 @@
 'use strict';
-var search = require('./search');
 
-function mainController($scope, backendService)
+function mainController(scope, backendService, searchService)
 {
     var loadedFilesInfo = []
-    $scope.filePath = 'searching..';
-    $scope.filesInfo = [];
-    $scope.query = '';
-    $scope.changeFolder = changeFolder;
-    $scope.searchFiles = searchFiles;
+    scope.filePath = 'searching..';
+    scope.filesInfo = [];
+    scope.query = '';
+    scope.changeFolder = changeFolder;
+    scope.searchFiles = searchFiles;
     init();
 
     /*****************************************
@@ -22,10 +21,10 @@ function mainController($scope, backendService)
 
     function searchFiles()
     {
-        if ($scope.query === '') {
+        if (scope.query === '') {
             resetFilter();
         } else {
-            search.find($scope.query, filterResults);
+            searchService.find(scope.query).then(filterResults);
         }
     }
 
@@ -39,14 +38,14 @@ function mainController($scope, backendService)
     }
 
     function loadFolder(folder) {
-        $scope.filePath = folder;
-        $scope.filesInfo = [];
+        scope.filePath = folder;
+        scope.filesInfo = [];
         backendService.requestFilesInPath(folder).then(function(files) {
             if (files !== null) {
                 backendService.requestFilesInspection(folder, files).then(function(filesInfo) {
                     if (filesInfo !== null) {
-                        loadedFilesInfo = $scope.filesInfo = filesInfo;
-                        search.resetIndex(loadedFilesInfo);
+                        loadedFilesInfo = scope.filesInfo = filesInfo;
+                        searchService.resetIndex(loadedFilesInfo);
                     } else {
                         console.log('Sorry, we could not display your files');
                     }
@@ -69,12 +68,14 @@ function mainController($scope, backendService)
             }
         });
 
-        $scope.filesInfo = newfilesInfo;
+        scope.filesInfo = newfilesInfo;
     }
 
     function resetFilter() {
-        $scope.filesInfo = loadedFilesInfo;
+        scope.filesInfo = loadedFilesInfo;
     } 
 }
+
+mainController.$inject =  ['$scope', 'backendService', 'searchService'];
 
 module.exports = mainController;

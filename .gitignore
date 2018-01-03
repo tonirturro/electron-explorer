@@ -11,3 +11,4 @@ node_modules/
 
 # Bundled code
 app/frontend
+test/bundle

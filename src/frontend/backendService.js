@@ -1,7 +1,21 @@
 'use strict';
-var ipcRenderer = require('electron').ipcRenderer;
 
 function backendService(q) {
+    var ipcRenderer;
+
+    if (navigator.userAgent.indexOf('Electron') !== -1) {
+        ipcRenderer = require('electron').ipcRenderer;
+    } else {
+        ipcRenderer = {
+            send: function(string, param1, param2) {
+    
+            },
+            on: function(string, cb) {
+    
+            }
+        };
+    }
+      
     self = this;
     self.requestUserPath = requestUserPath;
     self.requestFilesInPath = requestFilesInPath;
@@ -10,6 +24,7 @@ function backendService(q) {
     /**
      * Public methods
      */
+
     function requestUserPath() {
        return ipcRequest('request-path', null);
     }

@@ -1,13 +1,14 @@
 'use strict';
 
-function mainController(scope, backendService, searchService)
+function mainController(backendService, searchService)
 {
     var loadedFilesInfo = []
-    scope.filePath = 'searching..';
-    scope.filesInfo = [];
-    scope.query = '';
-    scope.changeFolder = changeFolder;
-    scope.searchFiles = searchFiles;
+    var self = this;
+    self.filePath = 'searching..';
+    self.filesInfo = [];
+    self.query = '';
+    self.changeFolder = changeFolder;
+    self.searchFiles = searchFiles;
     init();
 
     /*****************************************
@@ -21,10 +22,10 @@ function mainController(scope, backendService, searchService)
 
     function searchFiles()
     {
-        if (scope.query === '') {
+        if (self.query === '') {
             resetFilter();
         } else {
-            searchService.find(scope.query).then(filterResults);
+            searchService.find(self.query).then(filterResults);
         }
     }
 
@@ -38,13 +39,13 @@ function mainController(scope, backendService, searchService)
     }
 
     function loadFolder(folder) {
-        scope.filePath = folder;
-        scope.filesInfo = [];
+        self.filePath = folder;
+        self.filesInfo = [];
         backendService.requestFilesInPath(folder).then(function(files) {
             if (files !== null) {
                 backendService.requestFilesInspection(folder, files).then(function(filesInfo) {
                     if (filesInfo !== null) {
-                        loadedFilesInfo = scope.filesInfo = filesInfo;
+                        loadedFilesInfo = self.filesInfo = filesInfo;
                         searchService.resetIndex(loadedFilesInfo);
                     } else {
                         console.log('Sorry, we could not display your files');
@@ -68,14 +69,14 @@ function mainController(scope, backendService, searchService)
             }
         });
 
-        scope.filesInfo = newfilesInfo;
+        self.filesInfo = newfilesInfo;
     }
 
     function resetFilter() {
-        scope.filesInfo = loadedFilesInfo;
+        self.filesInfo = loadedFilesInfo;
     } 
 }
 
-mainController.$inject =  ['$scope', 'backendService', 'searchService'];
+mainController.$inject =  ['backendService', 'searchService'];
 
 module.exports = mainController;

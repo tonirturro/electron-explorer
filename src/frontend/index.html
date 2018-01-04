@@ -7,17 +7,17 @@
     <title>File Browser</title>
 </head>
 <body ng-app="frontend">
-    <div ng-controller="MainController">
+    <div ng-controller="MainController as ctrl">
         <div id="toolbar" >
-            <div id="current-folder">{{ filePath }}</div>
+            <div id="current-folder">{{ ctrl.filePath }}</div>
             <div id="search">
-                <input type="search" id="earch-input" ng-model="query"/>
-                <button ng-click="searchFiles()">Search</button>    
+                <input type="search" id="search-input" ng-model="ctrl.query"/>
+                <button ng-click="ctrl.searchFiles()">Search</button>    
             </div>
         </div>
         <div id="main-area">
-            <div class="item" ng-repeat="fileInfo in filesInfo">
-                <div class="icon" ng-class="fileInfo.type" ng-dblclick="changeFolder(fileInfo)"></div>
+            <div class="item" ng-repeat="fileInfo in ctrl.filesInfo">
+                <div class="icon" ng-class="fileInfo.type" ng-dblclick="ctrl.changeFolder(fileInfo)"></div>
                 <div class="filename">{{ fileInfo.fileName }}</div>
             </div>
         </div>

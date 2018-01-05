@@ -2,7 +2,7 @@
 import angular from "angular";
 import "angular-mocks";
 
-describe('When using the MainCorntroler, it', function() {
+describe('When using the MainControler, it', function() {
     beforeEach(angular.mock.module('frontend'));
 
     var ctrl, backendService, searchService;

@@ -1,21 +1,8 @@
 'use strict';
 
-function backendService(q) {
-    var ipcRenderer;
+var ipcRenderer = window.require('electron').ipcRenderer;
 
-    if (navigator.userAgent.indexOf('Electron') !== -1) {
-        ipcRenderer = require('electron').ipcRenderer;
-    } else {
-        ipcRenderer = {
-            send: function(string, param1, param2) {
-    
-            },
-            on: function(string, cb) {
-    
-            }
-        };
-    }
-      
+function backendService(q) {      
     self = this;
     self.requestUserPath = requestUserPath;
     self.requestFilesInPath = requestFilesInPath;

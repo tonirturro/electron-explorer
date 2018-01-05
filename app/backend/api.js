@@ -1,20 +1,19 @@
-const electron = require('electron');
 const Services = require('./services');
-const { ipcMain: ipc } = electron;
 
 /**
  * Encapsulates the interface between the main and the rendered process
  */
 module.exports = class Api {
-    constructor() {
-        let services = new Services();
+    constructor(ipc) {
+        this.services = new Services();
+        this.ipc = ipc;
         
-        ipc.on('request-path', (event, arg) => {
-            event.sender.send('request-path-reply', services.getUsersHomeFolder());
+        this.ipc.on('request-path', (event, arg) => {
+            event.sender.send('request-path-reply', this.services.getUsersHomeFolder());
         });
         
-        ipc.on('request-files', (event, filesPath) => {
-            services.getFilesInFolder(filesPath, (err, files) => {
+        this.ipc.on('request-files', (event, filesPath) => {
+            this.services.getFilesInFolder(filesPath, (err, files) => {
                 var result;
                 if (err) {
                     result = null;
@@ -25,8 +24,8 @@ module.exports = class Api {
             });
         });
         
-        ipc.on('inspect-files', (event, filesPath, files) => {
-            services.inspectAndDescribeFiles(filesPath, files, (err, files) => {
+        this.ipc.on('inspect-files', (event, filesPath, files) => {
+            this.services.inspectAndDescribeFiles(filesPath, files, (err, files) => {
                 var result;
                 if (err) {
                     result = null;

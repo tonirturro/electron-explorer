@@ -1,0 +1,9 @@
+{
+    "spec_dir": "app/backend",
+    "spec_files": [
+      "**/*.spec.js"
+    ],
+    "stopSpecOnExpectationFailure": false,
+    "random": false
+}
+  

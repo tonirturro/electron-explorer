@@ -1,4 +1,4 @@
-const  Api = require('./api');
+const Api = require('./api');
 const { ipcRenderer, ipcMain } = require('electron-ipc-mock')();
 
 describe('When using inter process api, it', () => {
@@ -12,21 +12,38 @@ describe('When using inter process api, it', () => {
         expect(api).toBeDefined();
     });
 
-    describe('When requesting path, it', () => {
-        
-        it('Should call the home folder path', (done) => {
-            const ExpectedPath = 'User path';
-            spyOn(api.services, 'getUsersHomeFolder').and.returnValue(ExpectedPath);
+    it('Should return home folder path', (done) => {
+        const Request = 'request-path';
+        const ExpectedPath = 'User path';
+        spyOn(api.services, 'getUsersHomeFolder').and.returnValue(ExpectedPath);
 
-            expect(api.services.getUsersHomeFolder()).toEqual(ExpectedPath);
+        ipcRenderer.send(Request, null);
 
-            ipcRenderer.send('request-path', null);
-
-            ipcRenderer.on('request-path-reply', (event, result) => {
-                // expect(result).toEqual(ExpectedPath);
+        ipcRenderer.on(Request + '-reply', (event, result) => {
+            if (result === ExpectedPath) {
                 done();
-            });
+            }
+        });
+    });
+
+    it ('Should return files in folder', () => {
+        const Request = 'request-files';
+        const Path = 'user path';
+        const ExpectedFiles = [];
+
+        spyOn(api.services, 'getFilesInFolder').and.callFake((path, callBack) => {
+            expect(path).toEqual(Path);
         });
 
+        api.services.getFilesInFolder(Path, (err, files) => {
+            var result;
+            if (err) {
+                result = null;
+            } else {
+                result = files;
+            }
+        });
+
+        ipcRenderer.send(Request, Path);
     });
 });

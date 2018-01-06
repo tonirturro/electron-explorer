@@ -5,8 +5,8 @@ const Services = require('./services');
  */
 module.exports = class Api {
     constructor(ipc) {
-        this.services = new Services();
         this.ipc = ipc;
+        this.services = new Services(); 
         
         this.ipc.on('request-path', (event, arg) => {
             event.sender.send('request-path-reply', this.services.getUsersHomeFolder());

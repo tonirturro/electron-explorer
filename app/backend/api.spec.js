@@ -1,49 +1,63 @@
 const Api = require('./api');
-const { ipcRenderer, ipcMain } = require('electron-ipc-mock')();
+const Services = require('./services');
+const ElectronMock = require('../../test/electronMock');
 
 describe('When using inter process api, it', () => {
-    var api;
+    const ExpectedPath = 'User path';
+    const ExpectedFiles = [ 'file1', 'file2' ];
+    var api, services, ipcMain, ipcRenderer;
 
     beforeEach(() => {
-        api = new Api(ipcMain);
-    });
-
-    it('Should be defined', () => {
-        expect(api).toBeDefined();
+        var electronMock = new ElectronMock();
+        ipcMain = electronMock.ipcMain;
+        ipcRenderer = electronMock.ipcRenderer;
+        services = new Services();
     });
 
     it('Should return home folder path', (done) => {
         const Request = 'request-path';
-        const ExpectedPath = 'User path';
-        spyOn(api.services, 'getUsersHomeFolder').and.returnValue(ExpectedPath);
-
-        ipcRenderer.send(Request, null);
+        spyOn(services, 'getUsersHomeFolder').and.returnValue(ExpectedPath);
+        api = new Api(ipcMain, services);
 
         ipcRenderer.on(Request + '-reply', (event, result) => {
-            if (result === ExpectedPath) {
-                done();
-            }
+            expect(result).toEqual(ExpectedPath);
+            done();
         });
+
+        ipcRenderer.send(Request, null);
     });
 
-    it ('Should return files in folder', () => {
+    it ('Should return files in folder', (done) => {
         const Request = 'request-files';
-        const Path = 'user path';
         const ExpectedFiles = [];
+        spyOn(services, 'getFilesInFolder').and.callFake((path, callBack) => {
+            expect(path).toEqual(ExpectedPath);
+            callBack(false, ExpectedFiles)
+        });
+        api = new Api(ipcMain, services);
 
-        spyOn(api.services, 'getFilesInFolder').and.callFake((path, callBack) => {
-            expect(path).toEqual(Path);
+        ipcRenderer.on(Request + '-reply', (event, result) => {
+            expect(result).toEqual(ExpectedFiles);
+            done();
         });
 
-        api.services.getFilesInFolder(Path, (err, files) => {
-            var result;
-            if (err) {
-                result = null;
-            } else {
-                result = files;
-            }
+        ipcRenderer.send(Request, ExpectedPath);
+    });
+
+    it ('Should return file info for files', () => {
+        const Request = 'inspect-files';
+        const ExpectedFileInfo = [ { type: 'file' }, { type: 'folder' }];
+        spyOn(services, 'inspectAndDescribeFiles').and.callFake((path, files, callBack) => {
+            expect(path).toEqual(ExpectedPath);
+            expect(files).toEqual(ExpectedFiles);
+            callBack(false, ExpectedFileInfo)
         });
 
-        ipcRenderer.send(Request, Path);
+        ipcRenderer.on(Request + '-reply', (event, result) => {
+            expect(result).toEqual(ExpectedFileInfo);
+            done();
+        });
+
+        ipcRenderer.send(Request, ExpectedPath, ExpectedFiles);
     });
 });

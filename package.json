@@ -23,7 +23,6 @@
     "copy-webpack-plugin": "^4.3.1",
     "css-loader": "^0.28.7",
     "electron": "^1.7.10",
-    "electron-ipc-mock": "0.0.3",
     "eslint": "^4.13.1",
     "file-loader": "^1.1.6",
     "jasmine": "^2.8.0",

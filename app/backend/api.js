@@ -1,19 +1,20 @@
-const Services = require('./services');
+
 
 /**
  * Encapsulates the interface between the main and the rendered process
  */
 module.exports = class Api {
-    constructor(ipc) {
-        this.ipc = ipc;
-        this.services = new Services(); 
+    constructor(ipc, services) {
+        var self = this;
+        self.ipc = ipc;
+        self.services = services; 
         
-        this.ipc.on('request-path', (event, arg) => {
-            event.sender.send('request-path-reply', this.services.getUsersHomeFolder());
+        self.ipc.on('request-path', (event, arg) => {
+            event.sender.send('request-path-reply', self.services.getUsersHomeFolder());
         });
         
-        this.ipc.on('request-files', (event, filesPath) => {
-            this.services.getFilesInFolder(filesPath, (err, files) => {
+        self.ipc.on('request-files', (event, filesPath) => {
+            self.services.getFilesInFolder(filesPath, (err, files) => {
                 var result;
                 if (err) {
                     result = null;
@@ -24,8 +25,8 @@ module.exports = class Api {
             });
         });
         
-        this.ipc.on('inspect-files', (event, filesPath, files) => {
-            this.services.inspectAndDescribeFiles(filesPath, files, (err, files) => {
+        self.ipc.on('inspect-files', (event, filesPath, files) => {
+            self.services.inspectAndDescribeFiles(filesPath, files, (err, files) => {
                 var result;
                 if (err) {
                     result = null;

@@ -10,5 +10,5 @@ node_modules/
 .vs
 
 # Bundled code
-app/frontend
+app
 test/bundle

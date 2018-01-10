@@ -19,7 +19,7 @@ app.on('window-all-closed', _ => {
 
 app.on('ready', _ => {
     mainWindow = new BrowserWindow();
-    mainWindow.loadURL(`file://${app.getAppPath()}/../frontend/index.html`);
+    mainWindow.loadURL(`file://${app.getAppPath()}/index.html`);
     mainWindow.on('closed', () => {
         mainWindow = null;
     });

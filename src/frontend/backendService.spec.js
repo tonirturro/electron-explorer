@@ -2,16 +2,16 @@
 
 import angular from "angular";
 import "angular-mocks";
-var ipcMock = window.require('electron').ipcMock;
 
 describe('When using the backend serrvice, it', function() {
     beforeEach(angular.mock.module('frontend'));
 
-    var $rootScope, backendService;
+    var $rootScope, backendService, ipcMain;
 
     beforeEach(inject(function(_$rootScope_, _backendService_) {
         $rootScope = _$rootScope_;
         backendService = _backendService_;
+        ipcMain = backendService.ipcMain;
     }));
 
     it('Should be defined', function() {
@@ -19,23 +19,15 @@ describe('When using the backend serrvice, it', function() {
     });
 
     describe('When requesting user path, it', function() {
-        var RequestUserPathApi = 'request-path';
-
-        it('Should send the right Api', function() {
-            backendService.requestUserPath();
-            expect(ipcMock.lastIpcRendererSendParams.api).toEqual(RequestUserPathApi);
-            expect(ipcMock.lastIpcRendererSendParams.param1).toBeNull();
-            expect(ipcMock.lastIpcRendererSendParams.param2).toBeNull();;
-        });
-
-        it('Should receive the right reply', function() {
-            backendService.requestUserPath();
-            expect(ipcMock.lastIpcRendererOnParams.reply).toEqual(RequestUserPathApi + '-reply');
-        });
 
         it('Should return the expected result', function(done) {
+            var RequestUserPathApi = 'request-path';
             var ExpectedResult = 'userPath';
-            ipcMock.lastIpcRendererOnParams.expectedResult = ExpectedResult;
+
+            ipcMain.once(RequestUserPathApi, function(event, arg) {
+                expect(arg).toBeNull();
+                event.sender.send(RequestUserPathApi + '-reply', ExpectedResult);
+            })
 
             backendService.requestUserPath().then(function(result) {
                 expect(result).toEqual(ExpectedResult);
@@ -47,24 +39,16 @@ describe('When using the backend serrvice, it', function() {
     });
 
     describe('When requesting files in path, it', function() {
-        var RequestFilesInPathApi = 'request-files';
-        var ExpectedPath = 'userPath';
-
-        it('Should send the right Api', function() {
-            backendService.requestFilesInPath(ExpectedPath);
-            expect(ipcMock.lastIpcRendererSendParams.api).toEqual(RequestFilesInPathApi);
-            expect(ipcMock.lastIpcRendererSendParams.param1).toEqual(ExpectedPath);
-            expect(ipcMock.lastIpcRendererSendParams.param2).toBeNull();;
-        });
-
-        it('Should receive the right reply', function() {
-            backendService.requestFilesInPath(ExpectedPath);
-            expect(ipcMock.lastIpcRendererOnParams.reply).toEqual(RequestFilesInPathApi + '-reply');
-        });
 
         it('Should return the expected result', function(done) {
+            var RequestFilesInPathApi = 'request-files';
+            var ExpectedPath = 'userPath';
             var ExpectedResult = ['file1', 'file2', 'file2'];
-            ipcMock.lastIpcRendererOnParams.expectedResult = ExpectedResult;
+
+            ipcMain.once(RequestFilesInPathApi, function(event, arg) {
+                expect(arg).toEqual(ExpectedPath);
+                event.sender.send(RequestFilesInPathApi + '-reply', ExpectedResult);
+            })
 
             backendService.requestFilesInPath(ExpectedPath).then(function(result) {
                 expect(result).toEqual(ExpectedResult);
@@ -76,29 +60,22 @@ describe('When using the backend serrvice, it', function() {
     });
 
     describe('When requesting files inspection, it', function() {
-        var RequestInspectFilesInPathApi = 'inspect-files';
-        var ExpectedPath = 'userPath';
-        var ExpectedFiles = ['file1', 'file2', 'file2'];
-
-        it('Should send the right Api', function() {
-            backendService.requestFilesInspection(ExpectedPath, ExpectedFiles);
-            expect(ipcMock.lastIpcRendererSendParams.api).toEqual(RequestInspectFilesInPathApi);
-            expect(ipcMock.lastIpcRendererSendParams.param1).toEqual(ExpectedPath);
-            expect(ipcMock.lastIpcRendererSendParams.param2).toEqual(ExpectedFiles);;
-        });
-
-        it('Should receive the right reply', function() {
-            backendService.requestFilesInspection(ExpectedPath, ExpectedFiles);
-            expect(ipcMock.lastIpcRendererOnParams.reply).toEqual(RequestInspectFilesInPathApi + '-reply');
-        });
 
         it('Should return the expected result', function(done) {
+            var RequestInspectFilesInPathApi = 'inspect-files';
+            var ExpectedPath = 'userPath';
+            var ExpectedFiles = ['file1', 'file2', 'file2'];
             var ExpectedResult = [
                 { fileInfo:1 }, 
                 { fileInfo:2 }, 
                 { fileInfo:3 }
             ];
-            ipcMock.lastIpcRendererOnParams.expectedResult = ExpectedResult;
+
+            ipcMain.once(RequestInspectFilesInPathApi, function(event, arg1, arg2) {
+                expect(arg1).toEqual(ExpectedPath);
+                expect(arg2).toEqual(ExpectedFiles);
+                event.sender.send(RequestInspectFilesInPathApi + '-reply', ExpectedResult);
+            })
 
             backendService.requestFilesInspection(ExpectedPath, ExpectedFiles).then(function(result) {
                 expect(result).toEqual(ExpectedResult);

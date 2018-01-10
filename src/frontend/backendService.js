@@ -1,9 +1,11 @@
 'use strict';
 
-var ipcRenderer = window.require('electron').ipcRenderer;
+var electron = window.require('electron');
+var ipcRenderer = electron.ipcRenderer;
 
-function backendService(q) {      
+function backendService(q) {
     self = this;
+    self.ipcMain = electron.ipcMain;
     self.requestUserPath = requestUserPath;
     self.requestFilesInPath = requestFilesInPath;
     self.requestFilesInspection = requestFilesInspection;
@@ -13,20 +15,20 @@ function backendService(q) {
      */
 
     function requestUserPath() {
-       return ipcRequest('request-path', null);
+        return ipcRequest('request-path', null);
     }
 
     function requestFilesInPath(path) {
-       return ipcRequest('request-files', path);
+        return ipcRequest('request-files', path);
     }
 
     function requestFilesInspection(path, files) {
         var deferred = q.defer();
-        ipcRenderer.send('inspect-files', path, files);
-        ipcRenderer.on('inspect-files-reply', function(event, result) {
-             deferred.resolve(result);
+        ipcRenderer.once('inspect-files-reply', function (event, result) {
+            deferred.resolve(result);
         });
-        return deferred.promise;    
+        ipcRenderer.send('inspect-files', path, files);
+        return deferred.promise;
     }
 
     /**
@@ -34,11 +36,11 @@ function backendService(q) {
      */
     function ipcRequest(request, argument) {
         var deferred = q.defer();
-        ipcRenderer.send(request, argument);
-        ipcRenderer.on(request + '-reply', function(event, result) {
-             deferred.resolve(result);
+        ipcRenderer.once(request + '-reply', function (event, result) {
+            deferred.resolve(result);
         });
-        return deferred.promise; 
+        ipcRenderer.send(request, argument);
+        return deferred.promise;
     }
 }
 

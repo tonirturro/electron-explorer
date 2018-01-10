@@ -28,15 +28,24 @@ var EventEmitter = function () {
     var self = this;
     self.events = {};
     self.on = on;
+    self.once = once;
     self.emit = emit;
+    self.removeListener = removeListener;
 
     function on(event, listener) {
-        if (typeof this.events[event] !== 'object') {
-            this.events[event] = [];
+        if (typeof self.events[event] !== 'object') {
+            self.events[event] = [];
         }
     
-        this.events[event].push(listener);
+        self.events[event].push(listener);
     };
+
+    function once(event, listener) {
+        self.on(event, function g () {
+            self.removeListener(event, g);
+            listener.apply(this, arguments);
+        });
+    }
 
     function emit(event, args) {
         var i, listeners, length;
@@ -50,6 +59,18 @@ var EventEmitter = function () {
             }
         }
     };
+
+    function removeListener(event, listener) {
+        var idx;
+
+        if (typeof self.events[event] === 'object') {
+            idx = indexOf(self.events[event], listener);
+    
+            if (idx > -1) {
+                self.events[event].splice(idx, 1);
+            }
+        }
+    }
 };
 
 var Sender = function (sender) {
@@ -61,10 +82,15 @@ var CrossEmitter = function(registerHere, emitHere) {
     var emit = emitHere;
     var self = this;
     self.on = on;
+    self.once = once;
     self.send = send;
 
     function on(event, listener) {
         register.on(event, listener);
+    }
+
+    function once(event, listener) {
+        register.once(event, listener);
     }
 
     function send(event)

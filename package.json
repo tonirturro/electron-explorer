@@ -4,7 +4,7 @@
   "description": "File browser using electron",
   "main": "index.js",
   "scripts": {
-    "start": "electron app",
+    "start": "electron app --remote-debugging-port=9222",
     "build": "webpack --config webpack.config.dev.js && webpack --config webpack.config.back.js",
     "watch:test": "webpack --config webpack.config.test.js --watch",
     "run:test": "karma start",

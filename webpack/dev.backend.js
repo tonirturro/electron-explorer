@@ -1,14 +1,10 @@
-const path = require("path");
-const merge = require('webpack-merge');
-const rules = require('./webpack.config.base');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     target: 'electron-main',
-    entry: './src/backend/main.js',
+    entry: '',
     output: {
-        filename: 'backend.js',
-        path: path.resolve(__dirname, 'app')
+        filename: '',
     },
     plugins: [
         new CopyWebpackPlugin([

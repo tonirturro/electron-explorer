@@ -6,11 +6,12 @@
   "scripts": {
     "start": "electron app",
     "debug": "gulp debug-electron",
-    "build": "webpack --config webpack.config.dev.js && webpack --config webpack.config.back.js",
-    "watch:test": "webpack --config webpack.config.test.js --watch",
+    "build": "gulp clean & gulp build-frontend & gulp build-backend",
     "run:test": "karma start",
+    "watch:test": "gulp watch-test-frontend",
     "backend:test": "jasmine --config=test/jasmine.json",
-    "test": "npm-run-all -p -r watch:test run:test"
+    "test-unit": "npm-run-all -p -r watch:test run:test",
+    "test":"jasmine --config=test/jasmine.json"
   },
   "keywords": [
     "electron",
@@ -23,6 +24,7 @@
     "angular-mocks": "^1.6.8",
     "copy-webpack-plugin": "^4.3.1",
     "css-loader": "^0.28.7",
+    "del": "^3.0.0",
     "electron": "^1.7.10",
     "electron-connect": "^0.6.3",
     "eslint": "^4.13.1",
@@ -36,7 +38,8 @@
     "npm-run-all": "^4.1.2",
     "style-loader": "^0.19.1",
     "webpack": "^3.10.0",
-    "webpack-merge": "^4.1.1"
+    "webpack-merge": "^4.1.1",
+    "webpack-stream": "^4.0.0"
   },
   "dependencies": {
     "angular": "^1.6.8",

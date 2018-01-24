@@ -1,5 +1,5 @@
 module.exports = {
-    backendEnd: {
+    backEnd: {
         entry: './src/backend/main.js',
         bundle: 'backend.js'
     },
